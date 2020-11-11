@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:opacity="opaque">
     <item android:drawable="@android:color/white" />
-    <item android:drawable="@drawable/sample_logo" android:gravity="center" />
+    <item android:drawable="@drawable/sample_image2" android:gravity="center" android:width="400dp" android:height="400dp" />
+    <item android:drawable="@drawable/sample_title" android:gravity="bottom" />
 </layer-list>
 
