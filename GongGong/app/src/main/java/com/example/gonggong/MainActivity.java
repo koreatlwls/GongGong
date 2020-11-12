@@ -60,8 +60,7 @@ public class MainActivity extends AppCompatActivity {
                         if(menu3Fragment==null) {
                             menu3Fragment=new Settings();
                             fragmentManager.beginTransaction().
-                                    add(R.id.frame, menu2Fragment).commit();
-
+                                    add(R.id.frame, menu3Fragment).commit();
                         }
                         if(menu1Fragment!=null) fragmentManager.beginTransaction().hide(menu1Fragment).commit();
                         if(menu2Fragment!=null) fragmentManager.beginTransaction().hide(menu2Fragment).commit();
