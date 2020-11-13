@@ -9,11 +9,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-public class mealcardApi extends AsyncTask<Void, Void, NodeList> {
+public class OpenApi extends AsyncTask<Void, Void, NodeList> {
 
     private String url;
 
-    public mealcardApi(String url){
+    public OpenApi(String url){
         this.url = url;
     }
 
@@ -44,8 +44,8 @@ public class mealcardApi extends AsyncTask<Void, Void, NodeList> {
         return nList;
     }
     @Override
-   protected void onPostExecute(NodeList str){
+    protected void onPostExecute(NodeList str){
         super.onPostExecute(str);
-   }
+    }
 }
 

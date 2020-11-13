@@ -77,17 +77,18 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
     private static final int FASTEST_UPDATE_INTERVAL_MS=1000*30;
     private static final String KEY_CAMERA_POSITION="camera_position";
     private static final String KEY_LOCATION="location";
-    private static NodeList nList;
     private Location myLocation=null;
     private MapView mapView=null;
     private Marker currentMarker=null;
-    mealcardApi meal;
     private static GoogleMap map;
+    private static NodeList constoreList;
+    private static NodeList welfareList;
+    private static NodeList freefoodList;
+    OpenApi openapi;
 
     public NearbyFacility() {
 
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,26 +96,40 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
         colorOrange=getResources().getColor(R.color.colorOrange);
         colorLightSkyBlue=getResources().getColor(R.color.colorLightSkyBlue);
         try {
-            setUpMap();
+            ConStoreData();
+            WelFareData();
+            FreeFoodData();
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
     }
-    private void setUpMap() throws ExecutionException, InterruptedException {
+    private void ConStoreData() throws ExecutionException, InterruptedException {
         String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
-        String url = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml";
-        meal = new mealcardApi(url);
-        meal.execute();
-        nList = meal.get();
-        /*
-        for (int temp = 0; temp <5; temp++){
-            Node nNode = nList.item(temp);
+        String constoreurl = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml";
+        openapi = new OpenApi(constoreurl);
+        openapi.execute();
+        constoreList = openapi.get();
+    }
+    private void WelFareData() throws ExecutionException, InterruptedException {
+        String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
+        String welfareurl = "http://api.data.go.kr/openapi/tn_pubr_public_oldnddspsnprt_carea_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml";
+        openapi = new OpenApi(welfareurl);
+        openapi.execute();
+        welfareList = openapi.get();
+    }
+    private void FreeFoodData() throws ExecutionException, InterruptedException {
+        String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
+        String freefoodurl = "http://api.data.go.kr/openapi/tn_pubr_public_free_mlsv_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml";
+        openapi = new OpenApi(freefoodurl);
+        openapi.execute();
+        freefoodList = openapi.get();
+        for (int temp = 0; temp <500; temp++){
+            Node nNode = freefoodList.item(temp);
             if(nNode.getNodeType()==Node.ELEMENT_NODE){
                 Element eElement = (Element) nNode;
-                Log.d("태그","가맹정명:"+getTagValue("mrhstNm",eElement));
+                //Log.d("태그","가맹정명:"+getTagValue("fcltyNm",eElement));
             }
         }
-         */
     }
     private String getTagValue(String tag, Element eElement){
         NodeList nlList = eElement.getElementsByTagName(tag).item(0).getChildNodes();
@@ -208,7 +223,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
         switch(id){
             case R.id.fab_Sub1:
                 if(showWhat!=conStore) {
-                    fab_main.setText("편의점");
+                    fab_main.setText("카드가맹점");
                     fab_main.setIcon(mContext.getDrawable(R.drawable.ic_store_white_24dp));
                     showWhat=conStore;
                     fab_sub1.setBackgroundColor(colorOrange);
@@ -225,6 +240,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                     fab_sub1.setBackgroundColor(colorLightSkyBlue);
                     fab_sub2.setBackgroundColor(colorOrange);
                     fab_sub3.setBackgroundColor(colorLightSkyBlue);
+                    showWelFare();
                 }
                 break;
             case R.id.fab_Sub3:
@@ -235,6 +251,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                     fab_sub1.setBackgroundColor(colorLightSkyBlue);
                     fab_sub2.setBackgroundColor(colorLightSkyBlue);
                     fab_sub3.setBackgroundColor(colorOrange);
+                    showFreeFood();
                 }
                 break;
         }
@@ -242,10 +259,49 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
     public void showConStore(){
         MarkerOptions markerOptions = new MarkerOptions();
         for(int i=0;i<500;i++) {
-            Node nNode = nList.item(i);
+            Node nNode = constoreList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
                 String storeName=getTagValue("mrhstNm",eElement);
+                double latitude=Double.parseDouble(getTagValue("latitude",eElement));
+                double longitude=Double.parseDouble(getTagValue("longitude",eElement));
+                LatLng latlng=new LatLng(latitude,longitude);
+                markerOptions.position(latlng);
+                markerOptions.title(storeName);
+                map.addMarker(markerOptions);
+            }
+        }
+    }
+    public void showFreeFood(){
+        MarkerOptions markerOptions = new MarkerOptions();
+        for(int i=0;i<500;i++) {
+            Node nNode = freefoodList.item(i);
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) nNode;
+                String storeName ="";
+                double latitude =0;
+                double longitude =0;
+                try {
+                    storeName=getTagValue("fcltyNm",eElement);
+                    latitude=Double.parseDouble(getTagValue("latitude",eElement));
+                    longitude=Double.parseDouble(getTagValue("longitude",eElement));
+                    LatLng latlng=new LatLng(latitude,longitude);
+                    markerOptions.position(latlng);
+                    markerOptions.title(storeName);
+                    map.addMarker(markerOptions);
+                } catch (NullPointerException e){
+                    storeName = null;
+                }
+            }
+        }
+    }
+    public void showWelFare(){
+        MarkerOptions markerOptions = new MarkerOptions();
+        for(int i=0;i<500;i++) {
+            Node nNode = welfareList.item(i);
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) nNode;
+                String storeName=getTagValue("trgetFcltyNm",eElement);
                 double latitude=Double.parseDouble(getTagValue("latitude",eElement));
                 double longitude=Double.parseDouble(getTagValue("longitude",eElement));
                 LatLng latlng=new LatLng(latitude,longitude);
