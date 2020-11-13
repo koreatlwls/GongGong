@@ -1,12 +1,23 @@
 package com.example.gonggong;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
+import android.content.RestrictionsManager;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Looper;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +25,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Toast;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -22,19 +52,37 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /*
 주변 시설 프래그먼트
  */
-public class NearbyFacility extends Fragment {
+public class NearbyFacility extends Fragment implements OnMapReadyCallback {
     private Context mContext;
     private ExtendedFloatingActionButton fab_main,fab_sub1,fab_sub2,fab_sub3;
+    private FloatingActionButton fab_myLocation;
     private boolean isFabOpen=false; //Floating ActionButton의 상태
     private static final int freeFood=3,welfare=2,conStore=1;
     private static int showWhat=freeFood; //현재 표시하고 있는 시설
     private static int colorOrange;
     private static int colorLightSkyBlue;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+    private LocationRequest locationRequest;
+    private Location mCurrentLocation;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=1;
+    private boolean mLocationPermissionGranted;
+    private static final int GPS_ENABLE_REQUEST_CODE=2001;
+    private static final int UPDATE_INTERVAL_MS= 1000 * 60;
+    private static final int FASTEST_UPDATE_INTERVAL_MS=1000*30;
+    private static final String KEY_CAMERA_POSITION="camera_position";
+    private static final String KEY_LOCATION="location";
+    private static NodeList nList;
+    private Location myLocation=null;
+    private MapView mapView=null;
+    private Marker currentMarker=null;
+    mealcardApi meal;
+    private static GoogleMap map;
 
     public NearbyFacility() {
 
@@ -48,18 +96,17 @@ public class NearbyFacility extends Fragment {
         colorLightSkyBlue=getResources().getColor(R.color.colorLightSkyBlue);
         try {
             setUpMap();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
     }
     private void setUpMap() throws ExecutionException, InterruptedException {
         String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
-        String url = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=100&type=xml";
-        mealcardApi meal = new mealcardApi(url);
+        String url = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml";
+        meal = new mealcardApi(url);
         meal.execute();
-        NodeList nList = meal.get();
+        nList = meal.get();
+        /*
         for (int temp = 0; temp <5; temp++){
             Node nNode = nList.item(temp);
             if(nNode.getNodeType()==Node.ELEMENT_NODE){
@@ -67,6 +114,7 @@ public class NearbyFacility extends Fragment {
                 Log.d("태그","가맹정명:"+getTagValue("mrhstNm",eElement));
             }
         }
+         */
     }
     private String getTagValue(String tag, Element eElement){
         NodeList nlList = eElement.getElementsByTagName(tag).item(0).getChildNodes();
@@ -78,17 +126,32 @@ public class NearbyFacility extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        if(savedInstanceState!=null){
+            mCurrentLocation=savedInstanceState.getParcelable(KEY_LOCATION);
+            CameraPosition mCameraPosition=savedInstanceState.getParcelable(KEY_CAMERA_POSITION);
+        }
         View v=inflater.inflate(R.layout.fragment_nearby_facility,container,false);
         fab_main=v.findViewById(R.id.fab_Main);
         fab_sub1=v.findViewById(R.id.fab_Sub1);
         fab_sub2=v.findViewById(R.id.fab_Sub2);
         fab_sub3=v.findViewById(R.id.fab_Sub3);
+        fab_myLocation=v.findViewById(R.id.btnMyLocation);
+        mapView=(MapView)v.findViewById(R.id.map);
+        mapView.getMapAsync(this);
         return v;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if(mapView!=null)
+            mapView.onCreate(savedInstanceState);
+        locationRequest=new LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(UPDATE_INTERVAL_MS)
+                .setFastestInterval(FASTEST_UPDATE_INTERVAL_MS);
+        LocationSettingsRequest.Builder builder=new LocationSettingsRequest.Builder();
+        builder.addLocationRequest(locationRequest);
+        mFusedLocationProviderClient=LocationServices.getFusedLocationProviderClient(mContext);
         fab_main.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -111,6 +174,13 @@ public class NearbyFacility extends Fragment {
             @Override
             public void onClick(View view) {
                 onFabClicked(R.id.fab_Sub3);
+            }
+        });
+        fab_myLocation.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                if(myLocation!=null)
+                setCurrentLocation(myLocation,"현재 위치","");
             }
         });
     }
@@ -144,6 +214,7 @@ public class NearbyFacility extends Fragment {
                     fab_sub1.setBackgroundColor(colorOrange);
                     fab_sub2.setBackgroundColor(colorLightSkyBlue);
                     fab_sub3.setBackgroundColor(colorLightSkyBlue);
+                    showConStore();
                 }
                 break;
             case R.id.fab_Sub2:
@@ -168,5 +239,162 @@ public class NearbyFacility extends Fragment {
                 break;
         }
     }
+    public void showConStore(){
+        MarkerOptions markerOptions = new MarkerOptions();
+        for(int i=0;i<500;i++) {
+            Node nNode = nList.item(i);
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) nNode;
+                String storeName=getTagValue("mrhstNm",eElement);
+                double latitude=Double.parseDouble(getTagValue("latitude",eElement));
+                double longitude=Double.parseDouble(getTagValue("longitude",eElement));
+                LatLng latlng=new LatLng(latitude,longitude);
+                markerOptions.position(latlng);
+                markerOptions.title(storeName);
+                map.addMarker(markerOptions);
+            }
+        }
+    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        MapsInitializer.initialize(this.getActivity());
+        map=googleMap;
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(35.141233, 126.925594), 10);
+        googleMap.animateCamera(cameraUpdate);
+
+        getLocationPermission();
+        updateLocationUI();
+        getDeviceLocation();
+    }
+    private void updateLocationUI() {
+        if (map == null) {
+            return;
+        }
+        try {
+            if (mLocationPermissionGranted) {
+                map.setMyLocationEnabled(true);
+                map.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                map.setMyLocationEnabled(false);
+                map.getUiSettings().setMyLocationButtonEnabled(false);
+                mCurrentLocation = null;
+                getLocationPermission();
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    LocationCallback locationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            super.onLocationResult(locationResult);
+
+            List<Location> locationList = locationResult.getLocations();
+
+            if (locationList.size() > 0) {
+                 myLocation = locationList.get(locationList.size() - 1);
+                LatLng currentPosition
+                        = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+                setCurrentLocation(myLocation, "현재 위치", "markerSnippet");
+                mCurrentLocation = myLocation;
+            }
+        }
+    };
+    private void getDeviceLocation() {
+        try {
+            if (mLocationPermissionGranted) {
+                mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    private void getLocationPermission() {
+        if (ContextCompat.checkSelfPermission(mContext,
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions((Activity) mContext,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+                }
+            }
+        }
+        updateLocationUI();
+    }
+    public boolean checkLocationServicesStatus() {
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+    public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
+        if (currentMarker != null) currentMarker.remove();
+        LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(currentLatLng);
+        markerOptions.title(markerTitle);
+        markerOptions.snippet(markerSnippet);
+        markerOptions.draggable(true);
+        currentMarker = map.addMarker(markerOptions);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
+        map.moveCamera(cameraUpdate);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if(map!=null){
+            outState.putParcelable(KEY_CAMERA_POSITION,map.getCameraPosition());
+            outState.putParcelable(KEY_LOCATION,mCurrentLocation);
+        }
+        super.onSaveInstanceState(outState);
+        mapView.onSaveInstanceState(outState);
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onLowMemory();
+    }
+
+
 
 }
