@@ -4,18 +4,25 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
-
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.StrictMode;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 /*
 주변 시설 프래그먼트
@@ -29,7 +36,6 @@ public class NearbyFacility extends Fragment {
     private static int colorOrange;
     private static int colorLightSkyBlue;
 
-
     public NearbyFacility() {
 
     }
@@ -40,8 +46,35 @@ public class NearbyFacility extends Fragment {
         mContext=getContext();
         colorOrange=getResources().getColor(R.color.colorOrange);
         colorLightSkyBlue=getResources().getColor(R.color.colorLightSkyBlue);
+        try {
+            setUpMap();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-
+    private void setUpMap() throws ExecutionException, InterruptedException {
+        String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
+        String url = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=100&type=xml";
+        mealcardApi meal = new mealcardApi(url);
+        meal.execute();
+        NodeList nList = meal.get();
+        for (int temp = 0; temp <5; temp++){
+            Node nNode = nList.item(temp);
+            if(nNode.getNodeType()==Node.ELEMENT_NODE){
+                Element eElement = (Element) nNode;
+                Log.d("태그","가맹정명:"+getTagValue("mrhstNm",eElement));
+            }
+        }
+    }
+    private String getTagValue(String tag, Element eElement){
+        NodeList nlList = eElement.getElementsByTagName(tag).item(0).getChildNodes();
+        Node nValue = (Node) nlList.item(0);
+        if(nValue == null)
+            return null;
+        return nValue.getNodeValue();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
