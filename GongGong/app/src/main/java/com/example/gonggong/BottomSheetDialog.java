@@ -1,6 +1,7 @@
 package com.example.gonggong;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.text.Layout;
@@ -64,7 +65,10 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
         btnShowDetail.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(getContext(),DetailInfo.class);
+                intent.putExtra("name",name);
+                intent.putExtra("code",code);
+                startActivity(intent);
             }
         });
         btnClose.setOnClickListener(new View.OnClickListener(){

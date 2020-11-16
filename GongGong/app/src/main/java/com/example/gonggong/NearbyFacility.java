@@ -303,7 +303,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     public void showFreeFood(){
         MarkerOptions markerOptions = new MarkerOptions();
         map.clear();
-        for(int i=0;i<10;i++) {
+        for(int i=0;i<500;i++) {
             Node nNode = freefoodList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
