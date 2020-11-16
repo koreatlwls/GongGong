@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.RestrictionsManager;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -52,8 +54,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 /*
@@ -85,6 +89,9 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     private static NodeList constoreList;
     private static NodeList welfareList;
     private static NodeList freefoodList;
+    private static boolean isClickedMyLocation=false;
+    private static boolean isLoadingData=false;
+    private String addressString="대한민국 충청북도";
     OpenApi openapi;
 
     public NearbyFacility() {
@@ -96,24 +103,17 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
         mContext=getContext();
         colorOrange=getResources().getColor(R.color.colorOrange);
         colorLightSkyBlue=getResources().getColor(R.color.colorLightSkyBlue);
-        try {
-            ConStoreData();
-            WelFareData();
-            FreeFoodData();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
     }
     private void ConStoreData() throws ExecutionException, InterruptedException {
         String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
-        String constoreurl = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml";
+        String constoreurl = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml&ctprvnNm="+addressString;
         openapi = new OpenApi(constoreurl);
         openapi.execute();
         constoreList = openapi.get();
     }
     private void WelFareData() throws ExecutionException, InterruptedException {
         String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
-        String welfareurl = "http://api.data.go.kr/openapi/tn_pubr_public_oldnddspsnprt_carea_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml";
+        String welfareurl = "http://api.data.go.kr/openapi/tn_pubr_public_oldnddspsnprt_carea_api?serviceKey="+ServiceKey+"&pageNo=0&numOfRows=500&type=xml&ctprvnNm="+addressString;
         openapi = new OpenApi(welfareurl);
         openapi.execute();
         welfareList = openapi.get();
@@ -195,10 +195,14 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
         fab_myLocation.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                if(myLocation!=null)
-                setCurrentLocation(myLocation,"현재 위치","");
+                if(myLocation!=null) {
+                    setCurrentLocation(myLocation, "현재 위치", "");
+                    addressString = getCurrentAddress(myLocation.getLatitude(), myLocation.getLongitude());
+                    isClickedMyLocation=true;
+                }
             }
         });
+
 
     }
     //Floating Action Button을 터치 시 서브 버튼들을 보여주거나 다시 숨긴다.
@@ -221,6 +225,22 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
         }
     }
     private void onFabClicked(int id){
+        if(!isClickedMyLocation){
+            Toast.makeText(mContext,"현재 위치 버튼을 눌러주세요!",Toast.LENGTH_LONG).show();
+            return;
+        }
+        if(!isLoadingData){
+            try {
+                String[] addressList=addressString.split(" ");
+                addressString=addressList[1];
+                ConStoreData();
+                WelFareData();
+                FreeFoodData();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
+            isLoadingData=true;
+        }
         fab_main.setBackgroundColor(colorOrange);
         switch(id){
             case R.id.fab_Sub1:
@@ -264,7 +284,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     public void showConStore(){
         MarkerOptions markerOptions = new MarkerOptions();
         map.clear();
-        for(int i=0;i<500;i++) {
+        for(int i=0;i<constoreList.getLength();i++) {
             Node nNode = constoreList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
@@ -283,7 +303,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     public void showFreeFood(){
         MarkerOptions markerOptions = new MarkerOptions();
         map.clear();
-        for(int i=0;i<500;i++) {
+        for(int i=0;i<10;i++) {
             Node nNode = freefoodList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
@@ -309,7 +329,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     public void showWelFare(){
         map.clear();
         MarkerOptions markerOptions = new MarkerOptions();
-        for(int i=0;i<500;i++) {
+        for(int i=0;i<welfareList.getLength();i++) {
             Node nNode = welfareList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
@@ -354,7 +374,34 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
             Log.e("Exception: %s", e.getMessage());
         }
     }
+    public String getCurrentAddress( double latitude, double longitude) {
+        //지오코더... GPS를 주소로 변환
+        Geocoder geocoder = new Geocoder(mContext, Locale.getDefault());
+        List<Address> addresses;
+        try {
 
+            addresses = geocoder.getFromLocation(
+                    latitude,
+                    longitude,
+                    7);
+        } catch (IOException ioException) {
+            //네트워크 문제
+            Toast.makeText(mContext, "지오코더 서비스 사용불가", Toast.LENGTH_LONG).show();
+            return "지오코더 서비스 사용불가";
+        } catch (IllegalArgumentException illegalArgumentException) {
+            Toast.makeText(mContext, "잘못된 GPS 좌표", Toast.LENGTH_LONG).show();
+            return "잘못된 GPS 좌표";
+        }
+
+        if (addresses == null || addresses.size() == 0) {
+            Toast.makeText(mContext, "주소 미발견", Toast.LENGTH_LONG).show();
+            return "주소 미발견";
+        }
+        Address address = addresses.get(0);
+        Toast.makeText(mContext,address.getAddressLine(0).toString(),Toast.LENGTH_LONG).show();
+        return address.getAddressLine(0).toString()+"\n";
+
+    }
     LocationCallback locationCallback = new LocationCallback() {
         @Override
         public void onLocationResult(LocationResult locationResult) {
@@ -364,8 +411,8 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
 
             if (locationList.size() > 0) {
                  myLocation = locationList.get(locationList.size() - 1);
-                LatLng currentPosition
-                        = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
+
+                //LatLng currentPosition= new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
                 //setCurrentLocation(myLocation, "현재 위치", "markerSnippet");setCurrentLocation(myLocation, "현재 위치", "markerSnippet");
                 mCurrentLocation = myLocation;
             }
