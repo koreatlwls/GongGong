@@ -44,6 +44,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -58,13 +59,13 @@ import java.util.concurrent.ExecutionException;
 /*
 주변 시설 프래그먼트
  */
-public class NearbyFacility extends Fragment implements OnMapReadyCallback {
+public class NearbyFacility extends Fragment implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener {
     private Context mContext;
     private ExtendedFloatingActionButton fab_main,fab_sub1,fab_sub2,fab_sub3;
     private FloatingActionButton fab_myLocation;
     private boolean isFabOpen=false; //Floating ActionButton의 상태
-    private static final int freeFood=3,welfare=2,conStore=1;
-    private static int showWhat=freeFood; //현재 표시하고 있는 시설
+    public static final int freeFood=3,welfare=2,conStore=1;
+    private static int showWhat=0; //현재 표시하고 있는 시설
     private static int colorOrange;
     private static int colorLightSkyBlue;
     private FusedLocationProviderClient mFusedLocationProviderClient;
@@ -73,8 +74,8 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=1;
     private boolean mLocationPermissionGranted;
     private static final int GPS_ENABLE_REQUEST_CODE=2001;
-    private static final int UPDATE_INTERVAL_MS= 1000 * 60;
-    private static final int FASTEST_UPDATE_INTERVAL_MS=1000*30;
+    private static final int UPDATE_INTERVAL_MS= 1000 * 180;
+    private static final int FASTEST_UPDATE_INTERVAL_MS=1000*120;
     private static final String KEY_CAMERA_POSITION="camera_position";
     private static final String KEY_LOCATION="location";
     private Location myLocation=null;
@@ -198,6 +199,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                 setCurrentLocation(myLocation,"현재 위치","");
             }
         });
+
     }
     //Floating Action Button을 터치 시 서브 버튼들을 보여주거나 다시 숨긴다.
     private void toggleFab(){
@@ -229,6 +231,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                     fab_sub1.setBackgroundColor(colorOrange);
                     fab_sub2.setBackgroundColor(colorLightSkyBlue);
                     fab_sub3.setBackgroundColor(colorLightSkyBlue);
+                    toggleFab();
                     showConStore();
                 }
                 break;
@@ -240,6 +243,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                     fab_sub1.setBackgroundColor(colorLightSkyBlue);
                     fab_sub2.setBackgroundColor(colorOrange);
                     fab_sub3.setBackgroundColor(colorLightSkyBlue);
+                    toggleFab();
                     showWelFare();
                 }
                 break;
@@ -251,6 +255,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                     fab_sub1.setBackgroundColor(colorLightSkyBlue);
                     fab_sub2.setBackgroundColor(colorLightSkyBlue);
                     fab_sub3.setBackgroundColor(colorOrange);
+                    toggleFab();
                     showFreeFood();
                 }
                 break;
@@ -258,6 +263,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
     }
     public void showConStore(){
         MarkerOptions markerOptions = new MarkerOptions();
+        map.clear();
         for(int i=0;i<500;i++) {
             Node nNode = constoreList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -265,15 +271,18 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                 String storeName=getTagValue("mrhstNm",eElement);
                 double latitude=Double.parseDouble(getTagValue("latitude",eElement));
                 double longitude=Double.parseDouble(getTagValue("longitude",eElement));
+                String rdnmadr=getTagValue("rdnmadr",eElement);
                 LatLng latlng=new LatLng(latitude,longitude);
                 markerOptions.position(latlng);
                 markerOptions.title(storeName);
+                markerOptions.snippet(rdnmadr);
                 map.addMarker(markerOptions);
             }
         }
     }
     public void showFreeFood(){
         MarkerOptions markerOptions = new MarkerOptions();
+        map.clear();
         for(int i=0;i<500;i++) {
             Node nNode = freefoodList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -285,9 +294,11 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                     storeName=getTagValue("fcltyNm",eElement);
                     latitude=Double.parseDouble(getTagValue("latitude",eElement));
                     longitude=Double.parseDouble(getTagValue("longitude",eElement));
+                    String rdnMadr=getTagValue("rdnmadr",eElement);
                     LatLng latlng=new LatLng(latitude,longitude);
                     markerOptions.position(latlng);
                     markerOptions.title(storeName);
+                    markerOptions.snippet(rdnMadr);
                     map.addMarker(markerOptions);
                 } catch (NullPointerException e){
                     storeName = null;
@@ -296,6 +307,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
         }
     }
     public void showWelFare(){
+        map.clear();
         MarkerOptions markerOptions = new MarkerOptions();
         for(int i=0;i<500;i++) {
             Node nNode = welfareList.item(i);
@@ -304,9 +316,11 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                 String storeName=getTagValue("trgetFcltyNm",eElement);
                 double latitude=Double.parseDouble(getTagValue("latitude",eElement));
                 double longitude=Double.parseDouble(getTagValue("longitude",eElement));
+                String rdnmadr=getTagValue("rdnmadr",eElement);
                 LatLng latlng=new LatLng(latitude,longitude);
                 markerOptions.position(latlng);
                 markerOptions.title(storeName);
+                markerOptions.snippet(rdnmadr);
                 map.addMarker(markerOptions);
             }
         }
@@ -317,10 +331,10 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
         map=googleMap;
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(new LatLng(35.141233, 126.925594), 10);
         googleMap.animateCamera(cameraUpdate);
-
         getLocationPermission();
         updateLocationUI();
         getDeviceLocation();
+        map.setOnMarkerClickListener(this);
     }
     private void updateLocationUI() {
         if (map == null) {
@@ -352,7 +366,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
                  myLocation = locationList.get(locationList.size() - 1);
                 LatLng currentPosition
                         = new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
-                setCurrentLocation(myLocation, "현재 위치", "markerSnippet");
+                //setCurrentLocation(myLocation, "현재 위치", "markerSnippet");setCurrentLocation(myLocation, "현재 위치", "markerSnippet");
                 mCurrentLocation = myLocation;
             }
         }
@@ -401,14 +415,8 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
         if (currentMarker != null) currentMarker.remove();
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(currentLatLng);
-        markerOptions.title(markerTitle);
-        markerOptions.snippet(markerSnippet);
-        markerOptions.draggable(true);
-        currentMarker = map.addMarker(markerOptions);
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng);
-        map.moveCamera(cameraUpdate);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng,10f);
+        map.animateCamera(cameraUpdate);
     }
 
     @Override
@@ -452,5 +460,24 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback {
     }
 
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        switch(showWhat){
+            case conStore:
+                BottomSheetDialog bottomSheetDialog1=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),conStore);
+                bottomSheetDialog1.show(getFragmentManager(),"bottomSheet");
+                break;
+            case freeFood:
+                BottomSheetDialog bottomSheetDialog2=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),freeFood);
+                bottomSheetDialog2.show(getFragmentManager(),"bottomSheet");
+                break;
+            case welfare:
+                BottomSheetDialog bottomSheetDialog3=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),welfare);
+                bottomSheetDialog3.show(getFragmentManager(),"bottomSheet");
+                break;
+        }
 
+
+        return true;
+    }
 }

@@ -5,4 +5,5 @@
     <string name="freeFood">무료급식소</string>
     <string name="welfare">복지센터</string>
     <string name="selectFac">선택하세요</string>
+    <string name="showDetail">상세정보 보기</string>
 </resources>

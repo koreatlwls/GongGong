@@ -8,4 +8,6 @@
     <color name="colorRealBlack">#000</color>
     <color name="colorGray">#868789</color>
     <color name="colorOrange">#FF7F00</color>
+    <color name="colorGreen">#1c9d9e</color>
+    <color name="colorWhiteGray">#E2E2E2</color>
 </resources>
