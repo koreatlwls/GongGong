@@ -103,6 +103,11 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
         mContext=getContext();
         colorOrange=getResources().getColor(R.color.colorOrange);
         colorLightSkyBlue=getResources().getColor(R.color.colorLightSkyBlue);
+            try {
+                FreeFoodData();
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
     }
     private void ConStoreData() throws ExecutionException, InterruptedException {
         String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
@@ -235,7 +240,6 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
                 addressString=addressList[1];
                 ConStoreData();
                 WelFareData();
-                FreeFoodData();
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
@@ -462,7 +466,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
         if (currentMarker != null) currentMarker.remove();
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng,10f);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(currentLatLng,14f);
         map.animateCamera(cameraUpdate);
     }
 

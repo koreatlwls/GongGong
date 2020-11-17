@@ -28,22 +28,20 @@ public class DetailInfo extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.detail);
+        setContentView(R.layout.detail_freefood);
         Intent intent = getIntent();
         String name = intent.getExtras().getString("name");
         int code = intent.getExtras().getInt("code");
         Log.d("태그",name);
         switch (code) {
-            case 1:
+            case NearbyFacility.conStore:
                 //편의점
                 String constoreurl = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey=" + ServiceKey + "&pageNo=0&numOfRows=1&type=xml&mrhstNm=" + name;
                 OpenApi openapi = new OpenApi(constoreurl);
                 openapi.execute();
                 try {
                     constoreList = openapi.get();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
                 Node nNode = constoreList.item(0);
@@ -52,16 +50,14 @@ public class DetailInfo extends AppCompatActivity {
                     Log.d("태그", "가맹정명:" + getTagValue("mrhstNm", eElement));
                 }
                 break;
-            case 2:
+            case NearbyFacility.welfare:
                 //복지
                 String welfareurl = "http://api.data.go.kr/openapi/tn_pubr_public_oldnddspsnprt_carea_api?serviceKey=" + ServiceKey + "&pageNo=0&numOfRows=1&type=xml&trgetFcltyNm="+name;
                 OpenApi openapi1 = new OpenApi(welfareurl);
                 openapi1.execute();
                 try {
                     welfareList = openapi1.get();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
                 Node nNode1 = welfareList.item(0);
@@ -70,16 +66,14 @@ public class DetailInfo extends AppCompatActivity {
                     Log.d("태그", "가맹정명:" + getTagValue("trgetFcltyNm", eElement));
                 }
                 break;
-            case 3:
+            case NearbyFacility.freeFood:
                 //무료급식소
                 String freefoodurl = "http://api.data.go.kr/openapi/tn_pubr_public_free_mlsv_api?serviceKey=" + ServiceKey + "&pageNo=0&numOfRows=1&type=xml&fcltyNm=" + name;
                 OpenApi openapi2 = new OpenApi(freefoodurl);
                 openapi2.execute();
                 try {
                     freefoodList = openapi2.get();
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
+                } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
                 Node nNode2 = freefoodList.item(0);
