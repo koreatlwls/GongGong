@@ -3,6 +3,7 @@ package com.example.gonggong;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,7 +33,6 @@ public class DetailInfo extends AppCompatActivity {
         Intent intent = getIntent();
         String name = intent.getExtras().getString("name");
         int code = intent.getExtras().getInt("code");
-        Log.d("태그",name);
         switch (code) {
             case NearbyFacility.conStore:
                 //편의점
@@ -47,7 +47,6 @@ public class DetailInfo extends AppCompatActivity {
                 Node nNode = constoreList.item(0);
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
-                    Log.d("태그", "가맹정명:" + getTagValue("mrhstNm", eElement));
                 }
                 break;
             case NearbyFacility.welfare:
@@ -63,7 +62,6 @@ public class DetailInfo extends AppCompatActivity {
                 Node nNode1 = welfareList.item(0);
                 if (nNode1.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode1;
-                    Log.d("태그", "가맹정명:" + getTagValue("trgetFcltyNm", eElement));
                 }
                 break;
             case NearbyFacility.freeFood:
@@ -77,11 +75,37 @@ public class DetailInfo extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 Node nNode2 = freefoodList.item(0);
-                if (nNode2.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode2;
-                    Log.d("태그", "가맹정명:" + getTagValue("fcltyNm", eElement));
-                }
+                showFreeFoodDetail(nNode2);
                 break;
+        }
+    }
+
+    private void showFreeFoodDetail(Node node){
+        TextView classify=findViewById(R.id.textClass);
+        Element element;
+        TextView[] textViews=new TextView[7];
+        textViews[0]=findViewById(R.id.facilityName);
+        textViews[1]=findViewById(R.id.address);
+        textViews[2]=findViewById(R.id.phoneNumber);
+        textViews[3]=findViewById(R.id.foodLocation);
+        textViews[4]=findViewById(R.id.forWhom);
+        textViews[5]=findViewById(R.id.foodDay);
+        textViews[6]=findViewById(R.id.foodTime);
+        String[] temp = new String[7];
+        classify.setText("무료 급식소");
+        if(node.getNodeType()==Node.ELEMENT_NODE) {
+            element = (Element) node;
+            temp[0] = getTagValue("fcltyNm", element);
+            temp[1]= getTagValue("rdnmadr",element);
+            temp[2]=getTagValue("phoneNumber",element);
+            temp[3]=getTagValue("mlsvPlace",element);
+            temp[4]=getTagValue("mlsvTrget",element);
+            temp[5]= getTagValue("mlsvDate",element);
+            temp[6]=getTagValue("mlsvTime",element);
+            for(int i=0;i<7;i++)
+                if(temp[i]!=null)
+                    textViews[i].setText(temp[i]);
+
         }
     }
 }

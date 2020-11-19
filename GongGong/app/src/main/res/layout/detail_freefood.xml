@@ -30,7 +30,7 @@
         app:layout_constraintLeft_toRightOf="@id/btnBack"
         app:layout_constraintTop_toTopOf="@id/orangeBlock"
         app:layout_constraintBottom_toBottomOf="@id/orangeBlock"
-        android:id="@+id/textName"
+        android:id="@+id/textClass"
         android:layout_marginLeft="10dp"
         android:text="가게 이름"
         android:textSize="20dp"
@@ -191,8 +191,8 @@
                     app:layout_constraintLeft_toLeftOf="@id/foodLocation"
                     app:layout_constraintTop_toTopOf="@id/imgFoodDay"
                     app:layout_constraintBottom_toBottomOf="@id/imgFoodDay"
-                    android:id="@+id/foodTime"
-                    android:text="급식시간"
+                    android:id="@+id/foodDay"
+                    android:text="급식요일"
 
                     />
                 <TextView
@@ -202,8 +202,8 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="@id/imgFoodTime"
                     app:layout_constraintBottom_toBottomOf="@id/imgFoodTime"
-                    android:text="급식요일"
-                    android:id="@+id/foodDay"
+                    android:text="급식시간"
+                    android:id="@+id/foodTime"
                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
