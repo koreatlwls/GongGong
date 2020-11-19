@@ -513,17 +513,18 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        LatLng latlng=marker.getPosition();
         switch(showWhat){
             case conStore:
-                BottomSheetDialog bottomSheetDialog1=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),conStore);
+                BottomSheetDialog bottomSheetDialog1=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),conStore,latlng.latitude,latlng.longitude);
                 bottomSheetDialog1.show(getFragmentManager(),"bottomSheet");
                 break;
             case freeFood:
-                BottomSheetDialog bottomSheetDialog2=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),freeFood);
+                BottomSheetDialog bottomSheetDialog2=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),freeFood,latlng.latitude,latlng.longitude);
                 bottomSheetDialog2.show(getFragmentManager(),"bottomSheet");
                 break;
             case welfare:
-                BottomSheetDialog bottomSheetDialog3=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),welfare);
+                BottomSheetDialog bottomSheetDialog3=new BottomSheetDialog(marker.getTitle(),marker.getSnippet(),welfare,latlng.latitude,latlng.longitude);
                 bottomSheetDialog3.show(getFragmentManager(),"bottomSheet");
                 break;
         }

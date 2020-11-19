@@ -10,7 +10,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="110dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorOrange"
         >
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/bottomSheetImg"
@@ -73,32 +73,54 @@
             android:layout_height="70dp"
             android:id="@+id/btnShowDetail"
             android:background="@color/colorRealWhite"
-            android:tint="@color/colorPrimary"
+            android:tint="@color/colorOrange"
             android:src="@drawable/ic_find_in_page_24px"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/btnCloseBottomSheet"
+            app:layout_constraintRight_toLeftOf="@id/btnFindWay1"
             android:scaleType="centerCrop"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="상세정보 보기"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorRealBlack"
             android:textSize="14dp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/btnShowDetail"
             app:layout_constraintLeft_toLeftOf="@id/btnShowDetail"
             app:layout_constraintRight_toRightOf="@id/btnShowDetail"
-
+            />
+        <ImageButton
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/btnFindWay1"
+            app:layout_constraintLeft_toRightOf="@id/btnShowDetail"
+            app:layout_constraintRight_toLeftOf="@id/btnCloseBottomSheet"
+            app:layout_constraintTop_toTopOf="@id/btnShowDetail"
+            android:background="@color/colorRealWhite"
+            android:src="@drawable/ic_action_mylocation"
+            android:scaleType="centerCrop"
+            android:tint="@color/colorOrange"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="길 찾기"
+            android:textSize="14dp"
+            android:textStyle="bold"
+            android:textColor="@color/colorRealBlack"
+            app:layout_constraintLeft_toLeftOf="@id/btnFindWay1"
+            app:layout_constraintRight_toRightOf="@id/btnFindWay1"
+            app:layout_constraintTop_toBottomOf="@id/btnFindWay1"
             />
         <ImageButton
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@id/btnShowDetail"
             android:src="@drawable/ic_close_24px"
             android:background="@color/colorRealWhite"
-            android:tint="@color/colorPrimary"
-            app:layout_constraintLeft_toRightOf="@id/btnShowDetail"
+            android:tint="@color/colorOrange"
+            app:layout_constraintLeft_toRightOf="@id/btnFindWay1"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:scaleType="centerCrop"
@@ -109,7 +131,7 @@
             android:layout_height="wrap_content"
             android:textSize="14dp"
             android:text="닫기"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/colorRealBlack"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/btnShowDetail"
             app:layout_constraintLeft_toLeftOf="@id/btnCloseBottomSheet"

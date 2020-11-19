@@ -3,6 +3,7 @@ package com.example.gonggong;
 import android.content.Context;
 import android.content.Intent;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Layout;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,13 +29,18 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
     private TextView bottomSheetClass;
     private TextView bottomSheetName;
     private TextView textAddress;
+    private Double latitude;
+    private Double longitude;
+
     private String name;
     private String address;
     private int code;
-    public BottomSheetDialog(String name,String address,int code){
+    public BottomSheetDialog(String name,String address,int code,Double latitude,Double longitude){
         this.name=name;
         this.code=code;
         this.address=address;
+        this.latitude=latitude;
+        this.longitude=longitude;
     }
 
 
@@ -65,10 +72,16 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
         btnShowDetail.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(),DetailInfo.class);
-                intent.putExtra("name",name);
-                intent.putExtra("code",code);
-                startActivity(intent);
+                if(code!=NearbyFacility.welfare) {
+                    Intent intent = new Intent(getContext(), DetailInfo.class);
+                    intent.putExtra("name", name);
+                    intent.putExtra("code", code);
+                    intent.putExtra("latitude", latitude);
+                    intent.putExtra("longitude", longitude);
+                    startActivity(intent);
+                }
+                else
+                    Toast.makeText(getContext(),"복지관은 상세정보를 조회할 수 없습니다.",Toast.LENGTH_LONG).show();
             }
         });
         btnClose.setOnClickListener(new View.OnClickListener(){
@@ -77,7 +90,15 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
                 dismiss();
             }
         });
-
+        ImageButton btnFindWay=v.findViewById(R.id.btnFindWay1);
+        btnFindWay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
+                        Uri.parse("geo:"+latitude+","+longitude+"?q="+name));
+                startActivity(intent);
+            }
+        });
         return v;
     }
 

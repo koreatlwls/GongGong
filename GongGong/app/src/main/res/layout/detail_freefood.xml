@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
     <TextView
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -22,7 +23,7 @@
         app:layout_constraintTop_toTopOf="@id/orangeBlock"
         app:layout_constraintBottom_toBottomOf="@id/orangeBlock"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         />
     <TextView
         android:layout_width="wrap_content"
@@ -31,7 +32,7 @@
         app:layout_constraintTop_toTopOf="@id/orangeBlock"
         app:layout_constraintBottom_toBottomOf="@id/orangeBlock"
         android:id="@+id/textClass"
-        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
         android:text="가게 이름"
         android:textSize="20dp"
         android:textColor="@color/colorRealWhite"
@@ -44,17 +45,16 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:src="@drawable/sample_image"
-            android:id="@+id/facilityImage"
-            android:scaleType="fitXY"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            <fragment
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
+                android:id="@+id/map2"
+                app:layout_constraintTop_toBottomOf="@id/facilityName"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                />
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="50dp"
                 android:gravity="center_vertical"
                 android:textSize="20dp"
                 android:textColor="@color/colorRealBlack"
@@ -63,12 +63,12 @@
                 android:text="가게 이름"
                 android:id="@+id/facilityName"
                 android:background="@drawable/bottom_border"
-                app:layout_constraintTop_toBottomOf="@id/facilityImage"
+                app:layout_constraintTop_toTopOf="parent"
                />
            <androidx.constraintlayout.widget.ConstraintLayout
                android:layout_width="match_parent"
                android:layout_height="80dp"
-               app:layout_constraintTop_toBottomOf="@id/facilityName"
+               app:layout_constraintTop_toBottomOf="@id/map2"
                android:background="@drawable/bottom_border"
                android:id="@+id/firstConsLayout"
                >
@@ -93,13 +93,14 @@
                    app:layout_constraintBottom_toBottomOf="parent"
                    />
                <TextView
-                   android:layout_width="wrap_content"
+                   android:layout_width="300dp"
                    android:layout_height="wrap_content"
                    android:id="@+id/address"
                    app:layout_constraintLeft_toRightOf="@id/imgPlace"
                    app:layout_constraintTop_toTopOf="@id/imgPlace"
                    app:layout_constraintBottom_toBottomOf="@id/imgPlace"
                    android:layout_marginStart="20dp"
+                   android:maxLines="4"
                    android:textSize="15dp"
                    android:text="주소"
                    />
@@ -116,7 +117,7 @@
            </androidx.constraintlayout.widget.ConstraintLayout>
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="130dp"
+                android:layout_height="180dp"
                 app:layout_constraintTop_toBottomOf="@id/firstConsLayout"
                 android:id="@+id/secondConsLayout"
                 android:background="@drawable/bottom_border"
@@ -163,21 +164,23 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     />
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/foodLocation"
                     android:text="급식장소"
                     android:textSize="15dp"
+                    android:maxLines="4"
                     app:layout_constraintTop_toTopOf="@id/imgFoodLocation"
                     app:layout_constraintBottom_toBottomOf="@id/imgFoodLocation"
                     app:layout_constraintLeft_toRightOf="@id/imgFoodLocation"
                     android:layout_marginStart="20dp"
                     />
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintLeft_toLeftOf="@id/foodLocation"
                     app:layout_constraintTop_toTopOf="@id/imgForWhom"
+                    android:maxLines="4"
                     app:layout_constraintBottom_toBottomOf="@id/imgForWhom"
                     android:text="급식대상"
                     android:textSize="15dp"
@@ -186,26 +189,48 @@
                     />
                 <TextView
                     android:textSize="15dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintLeft_toLeftOf="@id/foodLocation"
                     app:layout_constraintTop_toTopOf="@id/imgFoodDay"
                     app:layout_constraintBottom_toBottomOf="@id/imgFoodDay"
                     android:id="@+id/foodDay"
+                    android:maxLines="4"
                     android:text="급식요일"
 
                     />
                 <TextView
                     android:textSize="15dp"
                     app:layout_constraintLeft_toLeftOf="@id/foodLocation"
-                    android:layout_width="wrap_content"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="@id/imgFoodTime"
                     app:layout_constraintBottom_toBottomOf="@id/imgFoodTime"
                     android:text="급식시간"
                     android:id="@+id/foodTime"
+                    android:maxLines="4"
                     />
+
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnFindWay"
+                app:layout_constraintTop_toBottomOf="@id/secondConsLayout"
+                android:text="길 찾기"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:textColor="@color/colorRealWhite"
+                android:background="@color/colorOrange"
+                android:layout_marginTop="20dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
