@@ -44,6 +44,7 @@ public class DetailInfo extends AppCompatActivity implements OnMapReadyCallback 
     private static NodeList welfareList;
     private static NodeList freefoodList;
     private static String name;
+    private static String address;
     private Double latitude;
     private Double longitude;
     private GoogleMap googleMap=null;
@@ -67,6 +68,7 @@ public class DetailInfo extends AppCompatActivity implements OnMapReadyCallback 
         setContentView(R.layout.detail_freefood);
         Intent intent = getIntent();
         name = intent.getExtras().getString("name");
+        address = intent.getExtras().getString("address");
         int code = intent.getExtras().getInt("code");
         latitude=intent.getExtras().getDouble("latitude");
         longitude=intent.getExtras().getDouble("longitude");
@@ -82,7 +84,7 @@ public class DetailInfo extends AppCompatActivity implements OnMapReadyCallback 
         switch (code) {
             case NearbyFacility.conStore:
                 //편의점
-                String constoreurl = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey=" + ServiceKey + "&pageNo=0&numOfRows=1&type=xml&mrhstNm=" + name;
+                String constoreurl = "http://api.data.go.kr/openapi/tn_pubr_public_chil_wlfare_mlsv_api?serviceKey=" + ServiceKey + "&pageNo=0&numOfRows=1&type=xml&mrhstNm=" + name + "&rdnmadr=" + address;
                 OpenApi openapi = new OpenApi(constoreurl);
                 openapi.execute();
                 try {
@@ -95,7 +97,7 @@ public class DetailInfo extends AppCompatActivity implements OnMapReadyCallback 
                 break;
             case NearbyFacility.freeFood:
                 //무료급식소
-                String freefoodurl = "http://api.data.go.kr/openapi/tn_pubr_public_free_mlsv_api?serviceKey=" + ServiceKey + "&pageNo=0&numOfRows=1&type=xml&fcltyNm=" + name;
+                String freefoodurl = "http://api.data.go.kr/openapi/tn_pubr_public_free_mlsv_api?serviceKey=" + ServiceKey + "&pageNo=0&numOfRows=1&type=xml&fcltyNm=" + name + "&rdnmadr=" + address;
                 OpenApi openapi2 = new OpenApi(freefoodurl);
                 openapi2.execute();
                 try {

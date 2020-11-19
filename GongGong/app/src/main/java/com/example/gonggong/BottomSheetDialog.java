@@ -75,6 +75,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
                 if(code!=NearbyFacility.welfare) {
                     Intent intent = new Intent(getContext(), DetailInfo.class);
                     intent.putExtra("name", name);
+                    intent.putExtra("address",address);
                     intent.putExtra("code", code);
                     intent.putExtra("latitude", latitude);
                     intent.putExtra("longitude", longitude);
