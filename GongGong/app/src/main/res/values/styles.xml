@@ -3,7 +3,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorLightSkyBlue</item>
+        <item name="colorPrimaryDark">@color/colorOrange</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
@@ -11,7 +11,7 @@
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
     <style name="BottomNavigationTheme" parent="Theme.AppCompat.Light">
-        <item name="colorPrimary">@color/colorLightSkyBlue</item>
+        <item name="colorPrimary">@color/colorOrange</item>
         <item name="android:textColorSecondary">@color/colorGray</item>
     </style>
 

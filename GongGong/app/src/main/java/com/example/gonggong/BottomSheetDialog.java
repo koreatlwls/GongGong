@@ -31,10 +31,11 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
     private TextView textAddress;
     private Double latitude;
     private Double longitude;
-
     private String name;
     private String address;
     private int code;
+    private DbOpenHelper mDbOpenHelper;
+
     public BottomSheetDialog(String name,String address,int code,Double latitude,Double longitude){
         this.name=name;
         this.code=code;
@@ -42,8 +43,6 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
         this.latitude=latitude;
         this.longitude=longitude;
     }
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -91,13 +90,24 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
                 dismiss();
             }
         });
-        ImageButton btnFindWay=v.findViewById(R.id.btnFindWay1);
-        btnFindWay.setOnClickListener(new View.OnClickListener() {
+        ImageButton btnFindWay1=v.findViewById(R.id.btnFindWay1);
+        btnFindWay1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(android.content.Intent.ACTION_VIEW,
                         Uri.parse("geo:"+latitude+","+longitude+"?q="+name));
                 startActivity(intent);
+            }
+        });
+        ImageButton btnFavorite=v.findViewById(R.id.btnFavorite);
+        btnFavorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDbOpenHelper=new DbOpenHelper(getContext());
+                mDbOpenHelper.open();
+                mDbOpenHelper.create();
+                mDbOpenHelper.insertColumn(name,address,code,latitude,longitude);
+                Toast.makeText(getContext(),"DB 삽입 완료",Toast.LENGTH_LONG).show();
             }
         });
         return v;

@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.RestrictionsManager;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -42,6 +44,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -108,6 +111,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
+
     }
     private void ConStoreData() throws ExecutionException, InterruptedException {
         String ServiceKey = "kHfFtRQnsh8Dm3LJi8a82MF%2F5vsGDD%2BZQHrmRfLqPs%2F6MHeISttv1xd%2Bz%2Bs3ShfRYYBITs6aBtPLgRneYSoPHw%3D%3D";
@@ -287,6 +291,10 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     }
     public void showConStore(){
         MarkerOptions markerOptions = new MarkerOptions();
+        BitmapDrawable bitmapDrawable=(BitmapDrawable) getResources().getDrawable(R.drawable.constore_icon);
+        Bitmap b=bitmapDrawable.getBitmap();
+        Bitmap markerIcon=Bitmap.createScaledBitmap(b,150,200,false);
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
         map.clear();
         for(int i=0;i<constoreList.getLength();i++) {
             Node nNode = constoreList.item(i);
@@ -306,6 +314,10 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     }
     public void showFreeFood(){
         MarkerOptions markerOptions = new MarkerOptions();
+        BitmapDrawable bitmapDrawable=(BitmapDrawable) getResources().getDrawable(R.drawable.freefood_icon);
+        Bitmap b=bitmapDrawable.getBitmap();
+        Bitmap markerIcon=Bitmap.createScaledBitmap(b,150,150,false);
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
         map.clear();
         for(int i=0;i<500;i++) {
             Node nNode = freefoodList.item(i);
@@ -333,6 +345,10 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     public void showWelFare(){
         map.clear();
         MarkerOptions markerOptions = new MarkerOptions();
+        BitmapDrawable bitmapDrawable=(BitmapDrawable) getResources().getDrawable(R.drawable.welfare_icon);
+        Bitmap b=bitmapDrawable.getBitmap();
+        Bitmap markerIcon=Bitmap.createScaledBitmap(b,150,150,false);
+        markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
         for(int i=0;i<welfareList.getLength();i++) {
             Node nNode = welfareList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
