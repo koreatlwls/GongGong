@@ -66,7 +66,7 @@ import java.util.concurrent.ExecutionException;
 /*
 주변 시설 프래그먼트
  */
-public class NearbyFacility extends Fragment implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener {
+public class NearbyFacility extends Fragment implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener,Runnable {
     private Context mContext;
     private ExtendedFloatingActionButton fab_main,fab_sub1,fab_sub2,fab_sub3;
     private FloatingActionButton fab_myLocation;
@@ -80,9 +80,8 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
     private Location mCurrentLocation;
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION=1;
     private boolean mLocationPermissionGranted;
-    private static final int GPS_ENABLE_REQUEST_CODE=2001;
-    private static final int UPDATE_INTERVAL_MS= 1000 * 180;
-    private static final int FASTEST_UPDATE_INTERVAL_MS=1000*120;
+    private static final int UPDATE_INTERVAL_MS= 1000 * 30;
+    private static final int FASTEST_UPDATE_INTERVAL_MS=1000*30;
     private static final String KEY_CAMERA_POSITION="camera_position";
     private static final String KEY_LOCATION="location";
     private Location myLocation=null;
@@ -111,6 +110,8 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
+            Thread th=new Thread(NearbyFacility.this);
+            th.start();
 
     }
     private void ConStoreData() throws ExecutionException, InterruptedException {
@@ -239,15 +240,8 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
             return;
         }
         if(!isLoadingData){
-            try {
-                String[] addressList=addressString.split(" ");
-                addressString=addressList[1];
-                ConStoreData();
-                WelFareData();
-            } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
-            }
-            isLoadingData=true;
+            Toast.makeText(mContext,"데이터 로딩이 진행중입니다.",Toast.LENGTH_SHORT).show();
+            return;
         }
         fab_main.setBackgroundColor(colorOrange);
         switch(id){
@@ -319,7 +313,7 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
         Bitmap markerIcon=Bitmap.createScaledBitmap(b,150,150,false);
         markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon));
         map.clear();
-        for(int i=0;i<500;i++) {
+        for(int i=0;i<freefoodList.getLength();i++) {
             Node nNode = freefoodList.item(i);
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
@@ -418,7 +412,6 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
             return "주소 미발견";
         }
         Address address = addresses.get(0);
-        Toast.makeText(mContext,address.getAddressLine(0).toString(),Toast.LENGTH_LONG).show();
         return address.getAddressLine(0).toString()+"\n";
 
     }
@@ -430,11 +423,13 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
             List<Location> locationList = locationResult.getLocations();
 
             if (locationList.size() > 0) {
-                 myLocation = locationList.get(locationList.size() - 1);
+                myLocation = locationList.get(locationList.size() - 1);
+                addressString = getCurrentAddress(myLocation.getLatitude(), myLocation.getLongitude());
+                isClickedMyLocation=true;
 
                 //LatLng currentPosition= new LatLng(myLocation.getLatitude(), myLocation.getLongitude());
                 //setCurrentLocation(myLocation, "현재 위치", "markerSnippet");setCurrentLocation(myLocation, "현재 위치", "markerSnippet");
-                mCurrentLocation = myLocation;
+
             }
         }
     };
@@ -547,5 +542,19 @@ public class NearbyFacility extends Fragment implements OnMapReadyCallback,Googl
 
 
         return true;
+    }
+
+    @Override
+    public void run() {
+        while(!isClickedMyLocation);
+        try {
+            String[] addressList=addressString.split(" ");
+            addressString=addressList[1];
+            ConStoreData();
+            WelFareData();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        isLoadingData=true;
     }
 }

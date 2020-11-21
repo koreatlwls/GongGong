@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 
 public class BottomSheetDialog extends BottomSheetDialogFragment  {
@@ -78,6 +79,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment  {
                     intent.putExtra("code", code);
                     intent.putExtra("latitude", latitude);
                     intent.putExtra("longitude", longitude);
+
                     startActivity(intent);
                 }
                 else

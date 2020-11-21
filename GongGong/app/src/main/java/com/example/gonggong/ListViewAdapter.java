@@ -26,11 +26,13 @@ public class ListViewAdapter extends BaseAdapter {
     public Object getItem(int i) {
         return listViewItemList.get(i);
     }
+    public void removeItem(int i){listViewItemList.remove(i);}
 
     @Override
     public long getItemId(int i) {
         return i;
     }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

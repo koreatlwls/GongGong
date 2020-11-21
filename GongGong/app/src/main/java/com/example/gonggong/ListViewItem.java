@@ -1,6 +1,7 @@
 package com.example.gonggong;
 
 import android.graphics.drawable.Drawable;
+import android.widget.CheckBox;
 
 public class ListViewItem {
     private Drawable icon;

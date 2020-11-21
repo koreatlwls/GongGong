@@ -10,10 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -21,9 +23,13 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 
+import java.util.ArrayList;
+
 
 public class Settings extends Fragment {
     ListView listView;
+    ListViewAdapter listViewAdapter;
+    Button buttonDelete;
     private DbOpenHelper mDbOpenHelper;
     public Settings() {
         // Required empty public constructor
@@ -40,11 +46,12 @@ public class Settings extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.fragment_settings,container,false);
-        ListViewAdapter listViewAdapter=new ListViewAdapter();
-
+        listViewAdapter=new ListViewAdapter();
+        buttonDelete=v.findViewById(R.id.btnDelete);
         listView=(ListView)v.findViewById(R.id.listView);
         listView.setAdapter(listViewAdapter);
         showList(listViewAdapter);
+
         return v;
     }
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -65,6 +72,23 @@ public class Settings extends Fragment {
                 }
                 else
                     Toast.makeText(getContext(),"복지관은 상세정보를 조회할 수 없습니다.",Toast.LENGTH_LONG).show();
+            }
+        });
+        buttonDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SparseBooleanArray checkedItems = listView.getCheckedItemPositions();
+                int count = listViewAdapter.getCount() ;
+
+                for (int i = count-1; i >= 0; i--) {
+                    if (checkedItems.get(i)) {
+                        listViewAdapter.removeItem(i);
+                    }
+                }
+
+                // 모든 선택 상태 초기화.
+                listView.clearChoices() ;
+                listViewAdapter.notifyDataSetChanged();
             }
         });
     }
