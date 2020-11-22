@@ -47,7 +47,13 @@ public class Notice extends Fragment {
         }
         int cnt =0;
         for (Element element : titleContents) {
-            titles[cnt] = element.text()+"\n";
+            String lenCheck = element.text()+"\n";
+            if(lenCheck.length() > 20) {
+                lenCheck = lenCheck.substring(0, 20);
+                lenCheck += " ...";
+                titles[cnt] = lenCheck;
+            }
+            else titles[cnt] = element.text()+"\n";
             cnt++;
             if (cnt == 10) // 10개만 파싱
                 break;
