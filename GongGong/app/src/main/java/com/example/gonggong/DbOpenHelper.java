@@ -61,8 +61,8 @@ public class DbOpenHelper {
     }
 
     // Delete DB
-    public boolean deleteColumn(long id){
-        return mDB.delete(DataBase.CreateDB._TABLENAME, "_id="+id, null) > 0;
+    public boolean deleteColumn(String address){
+        return mDB.delete(DataBase.CreateDB._TABLENAME, "facaddr="+"\'"+address+"\'", null) > 0;
     }
     // Select DB
     public Cursor selectColumns(){

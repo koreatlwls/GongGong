@@ -1,5 +1,6 @@
 package com.example.gonggong;
 
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,7 +31,6 @@ import java.util.ArrayList;
 public class Settings extends Fragment {
     ListView listView;
     ListViewAdapter listViewAdapter;
-    Button buttonDelete;
     private DbOpenHelper mDbOpenHelper;
     public Settings() {
         // Required empty public constructor
@@ -47,7 +48,6 @@ public class Settings extends Fragment {
                              Bundle savedInstanceState) {
         View v=inflater.inflate(R.layout.fragment_settings,container,false);
         listViewAdapter=new ListViewAdapter();
-        buttonDelete=v.findViewById(R.id.btnDelete);
         listView=(ListView)v.findViewById(R.id.listView);
         listView.setAdapter(listViewAdapter);
         showList(listViewAdapter);
@@ -56,39 +56,14 @@ public class Settings extends Fragment {
     }
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int i, long l) {
                 ListViewItem item=(ListViewItem) parent.getItemAtPosition(i);
-
-                if(item.getCode()!=NearbyFacility.welfare) {
-                    Intent intent = new Intent(getContext(), DetailInfo.class);
-                    intent.putExtra("name", item.getName());
-                    intent.putExtra("address", item.getAddress());
-                    intent.putExtra("code", item.getCode());
-                    intent.putExtra("latitude", item.getLatitude());
-                    intent.putExtra("longitude", item.getLongitude());
-                    startActivity(intent);
-                }
-                else
-                    Toast.makeText(getContext(),"복지관은 상세정보를 조회할 수 없습니다.",Toast.LENGTH_LONG).show();
-            }
-        });
-        buttonDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SparseBooleanArray checkedItems = listView.getCheckedItemPositions();
-                int count = listViewAdapter.getCount() ;
-
-                for (int i = count-1; i >= 0; i--) {
-                    if (checkedItems.get(i)) {
-                        listViewAdapter.removeItem(i);
-                    }
-                }
-
-                // 모든 선택 상태 초기화.
-                listView.clearChoices() ;
-                listViewAdapter.notifyDataSetChanged();
+                CustomDialog customDialog=new CustomDialog(getContext(),item.getName()
+                ,item.getAddress(),item.getLatitude(),item.getLongitude(),item.getCode(),i,listViewAdapter);
+                customDialog.callFunction();
             }
         });
     }

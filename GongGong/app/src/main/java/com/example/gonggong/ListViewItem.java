@@ -9,6 +9,16 @@ public class ListViewItem {
     private String address;
     private Double latitude;
     private Double longitude;
+    private CheckBox checkBox=null;
+
+    public CheckBox getCheckBox() {
+        return checkBox;
+    }
+
+    public void setCheckBox(CheckBox checkBox) {
+        this.checkBox = checkBox;
+    }
+
     private int code;
     public int getCode() {
         return code;

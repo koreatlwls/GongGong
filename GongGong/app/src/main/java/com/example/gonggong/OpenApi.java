@@ -32,9 +32,7 @@ public class OpenApi extends AsyncTask<Void, Void, NodeList> {
         Document doc = null;
         try {
             doc = dBuilder.parse(url);
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             e.printStackTrace();
         }
 

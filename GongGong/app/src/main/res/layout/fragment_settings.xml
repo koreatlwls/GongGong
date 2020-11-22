@@ -23,21 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/listView"
-        android:choiceMode="multipleChoice"
-        />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/textLike"
-        app:layout_constraintRight_toRightOf="parent"
-        android:text="삭제"
-        android:textSize="18dp"
-        android:layout_marginRight="10dp"
-        android:textStyle="bold"
-        android:id="@+id/btnDelete"
-        android:textColor="@color/colorRealWhite"
-        android:background="@drawable/border_rectangle"
+        android:overScrollMode="always"
         />
 
 

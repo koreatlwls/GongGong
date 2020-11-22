@@ -55,7 +55,10 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     }
                     case R.id.navigationMenu3:{
-                        menu3Fragment=null;
+                        if(menu3Fragment!=null) {
+                            fragmentManager.beginTransaction().hide(menu3Fragment).commit();
+                            menu3Fragment=null;
+                        }
                         menu3Fragment=new Settings();
                         fragmentManager.beginTransaction().add(R.id.frame, menu3Fragment).commit();
                         if(menu1Fragment!=null) fragmentManager.beginTransaction().hide(menu1Fragment).commit();
