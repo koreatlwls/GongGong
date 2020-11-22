@@ -85,14 +85,14 @@ public class Notice extends Fragment {
                 e.printStackTrace();
             }
 
-            int cnt = 0;/*
+            int cnt = 0;
             for (Element element : titleContents) {
                 titles[cnt] = element.text()+"\n";
                 cnt++;
                 if (cnt == 10) // 10개만 파싱
                     break;
             }
-*/
+
             cnt = 0;
             for(Element element : centerContents) {
                 centers[cnt] = element.text()+"\n";
