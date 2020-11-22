@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.util.Strings;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,11 +31,14 @@ import java.util.ArrayList;
 
 public class Notice extends Fragment {
 
-    private Button getBtn;
-    private TextView result;
-    Elements contents;
+    Elements titleContents, centerContents;
     Document doc = null;
-    String Top10;
+    String[] nums = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+    String[] centers = new String[10];
+    String[] titles = new String[10];
+
+    ListView listView;
+    NoticeViewAdapter adapter;
 
 
     public Notice() {
@@ -51,41 +56,53 @@ public class Notice extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_notice, container, false);
 
-        result = (TextView) view.findViewById(R.id.result);
-        getBtn = (Button)view.findViewById(R.id.getBtn);
+        adapter = new NoticeViewAdapter();
+        listView = (ListView) view.findViewById(R.id.noticeListView);
+        listView.setAdapter(adapter);
 
-
-        getBtn.setOnClickListener(new View.OnClickListener() {
+        new AsyncTask() { // AsyncTask객체 생성
             @Override
-            public void onClick(View view) {
-                new AsyncTask() { // AsyncTask객체 생성
-                    @Override
-                    protected Object doInBackground(Object[] params) {
-                        try {
-                            doc = Jsoup.connect("https://www.ion.or.kr/center/news/notice/1#").get(); // 페이지를 불러옴
-                            contents = doc.select(".left a"); // 셀렉터로 class가 left인 값 중 a태그의 값을 불러옴
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        Top10 = "";
-                        int cnt = 0;
-                        for(Element element: contents) {
-                            cnt++;
-                            Top10 += cnt+". "+element.text() + "\n";
-                            if(cnt == 10) // 10개만 파싱
-                                break;
-                        }
-                        return null;
-                    }
-                    @Override
-                    protected void onPostExecute(Object o) {
-                        super.onPostExecute(o);
-                        Log.i("TAG",""+Top10);
-                        result.setText(Top10);
-                    }
-                }.execute();
+            protected Object doInBackground(Object[] params) {
+                try {
+                    doc = Jsoup.connect("https://www.ion.or.kr/center/news/notice/1#").get(); // 페이지를 불러옴
+                    titleContents = doc.select(".left a"); // 셀렉터로 class가 left인 값 중 a태그의 값을 불러옴
+                    centerContents = doc.select(".center a");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                int cnt = 0;
+                for (Element element : titleContents) {
+                    titles[cnt] = element.text()+"\n";
+                    cnt++;
+                    if (cnt == 10) // 10개만 파싱
+                        break;
+                }
+                cnt = 0;
+                for(Element element : centerContents) {
+                    centers[cnt] = element.text()+"\n";
+                    cnt++;
+                    if(cnt == 10) break;
+                }
+                return null;
             }
-        });
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                Log.i("TAG", "" + titles[0]);
+            }
+        }.execute();
+
+
+        for(int i = 0; i < 10; i++) {
+            adapter.addItem(nums[i], centers[i], titles[i]);
+            //Log.i("TAG", "" + titles[i]);
+        }
+
+        listView.clearChoices() ;
+        adapter.notifyDataSetChanged();
+
         return view;
     }
+
 }

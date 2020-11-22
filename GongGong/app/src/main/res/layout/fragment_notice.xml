@@ -1,32 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Notice">
-
-    <LinearLayout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Settings">
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="50dp"
+        android:text="공지사항"
+        android:textSize="20dp"
+        android:textColor="@color/colorRealWhite"
+        android:paddingStart="30dp"
+        android:textStyle="bold"
+        android:background="@color/colorOrange"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/textNotice"
+        />
+    <ListView
+        app:layout_constraintTop_toBottomOf="@id/textNotice"
+        android:layout_width="match_parent"
+        android:layout_height="680dp"
+        android:id="@+id/noticeListView"
+        />
 
-        <Button
-            android:id="@+id/getBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="50dp"
-            android:text="Get Website" />
 
-        <TextView
-            android:id="@+id/result"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="30dp"
-            android:text="Result..."
-            android:textSize="17sp" />
-
-    </LinearLayout>
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
