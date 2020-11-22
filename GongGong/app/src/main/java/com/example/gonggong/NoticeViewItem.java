@@ -4,6 +4,8 @@ public class NoticeViewItem {
     String num;
     String center;
     String title;
+    String date;
+    String link;
 
     public void setNum(String num) {
         this.num = num;
@@ -28,4 +30,12 @@ public class NoticeViewItem {
     public String getTitle() {
         return title;
     }
+
+    public void setDate(String date) {this.date = date;}
+
+    public String getDate() {return date;}
+
+    public void setLink(String link) {this.link = link;}
+
+    public String getLink() {return link;}
 }
