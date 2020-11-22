@@ -28,7 +28,7 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import java.util.ArrayList;
 
 
-public class Settings extends Fragment {
+public class  Settings extends Fragment {
     ListView listView;
     ListViewAdapter listViewAdapter;
     private DbOpenHelper mDbOpenHelper;
